@@ -15,7 +15,7 @@ import {
 import { DataTable } from "../ui/data-table";
 import { Receipt } from "@/types/receipt.type";
 import { Receipt_Mock_Data } from "@/mock";
-import { ReceiptStatusBadge } from "../receipt/receipt-status-badge";
+import { ReceiptStatusBadge } from "./receipt-status-badge";
 
 export const columns: ColumnDef<Receipt>[] = [
   {
@@ -106,6 +106,6 @@ export const columns: ColumnDef<Receipt>[] = [
   },
 ];
 
-export default function LatestReceiptDataTable() {
-  return <DataTable columns={columns} data={Receipt_Mock_Data} pageSize={10} />;
+export default function ReceiptTable() {
+  return <DataTable columns={columns} data={Receipt_Mock_Data} />;
 }

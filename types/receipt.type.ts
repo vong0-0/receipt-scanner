@@ -2,6 +2,13 @@ import { Category } from "./category.type";
 
 export type ReceiptStatus = "pending" | "processed" | "confirmed" | "error";
 
+export const RECEIPT_STATUSES: ReceiptStatus[] = [
+  "pending",
+  "processed",
+  "confirmed",
+  "error",
+];
+
 export interface ReceiptItem {
   id: string;
   receipt_id: string;
