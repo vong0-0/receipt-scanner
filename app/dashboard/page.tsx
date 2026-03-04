@@ -2,7 +2,6 @@ import AppHeader from "@/components/app-header";
 import ChartAreaInteractive from "@/components/chart-area-interactive";
 import ChartBarInteractive from "@/components/chart-bar-interactive";
 import LatestReceipt from "@/components/dashboard/latest-receipt";
-import { Payment } from "@/components/dashboard/latest-receipt-table/columns";
 import OverviewCardContainer from "@/components/dashboard/overview-card-container";
 
 export default async function Page() {
