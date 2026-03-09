@@ -1,0 +1,109 @@
+import AppHeader from "@/components/app-header";
+import ReceiptImagePlaceholder from "@/components/receipt/receipt-image-placeholder";
+import { ReceiptStatusBadge } from "@/components/receipt/receipt-status-badge";
+import { FormattedDate } from "@/components/ui/formatted-date";
+import { formatDateTime } from "@/lib/format";
+import { getOCRAccuracy } from "@/lib/ocr-utils";
+import { Receipt_Mock_Data } from "@/mock";
+import { Receipt } from "@/types/receipt.type";
+import Image from "next/image";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import { Field, FieldLabel } from "@/components/ui/field";
+import ReceiptOCRAccuracy from "@/components/receipt/receipt-orc-accuracy";
+import SigmaImage from "@/public/sigma.png";
+import { Button } from "@/components/ui/button";
+import { Pen, Trash } from "lucide-react";
+import {
+  ReceiptDetailItems,
+  ReceiptDetailSummary,
+} from "@/components/receipt/receipt-detail-info";
+
+export default async function ReceiptPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+
+  const receipt: Receipt = Receipt_Mock_Data.find((r) => r.id === id)!;
+
+  return (
+    <>
+      <AppHeader title={`ໃບບິນ ${id}`} />
+      <div className="@container/main flex flex-1 flex-col gap-6 px-4 lg:px-6">
+        <div className="flex items-center justify-between gap-4 pt-6 pb-4 md:pb-3">
+          {/* Store name and date */}
+          <div className="flex flex-col gap-1  ">
+            <h1 className="text-2xl font-bold">{receipt?.storeName}</h1>
+            <p className="text-sm text-muted-foreground">
+              {formatDateTime(receipt?.receiptDate)}
+            </p>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-2 items-center">
+            <div>
+              <Button
+                variant="outline"
+                className="hidden xs:flex bg-sky-600 text-white"
+              >
+                ແກ້ໄຂ
+              </Button>
+              <Button
+                variant="outline"
+                className="xs:hidden bg-sky-600 text-white"
+                size="icon"
+                aria-label="Submit"
+              >
+                <Pen className="size-3.5" />
+              </Button>
+            </div>
+            <div>
+              <Button
+                variant="outline"
+                className="hidden xs:flex bg-rose-600 text-white"
+              >
+                ລົບ
+              </Button>
+              <Button
+                variant="outline"
+                className="xs:hidden bg-rose-600 text-white"
+                size="icon"
+                aria-label="Submit"
+              >
+                <Trash className="size-3.5" />
+              </Button>
+            </div>
+          </div>
+        </div>
+        <div className="flex flex-col @3xl/main:flex-row gap-6 pb-6">
+          <div className="flex flex-col flex-1 lg:max-w-[500px]">
+            {/* Receipt image and OCR accuracy */}
+            <div className="h-[450px]">
+              {!receipt?.imageUrl ? (
+                <Image
+                  className="w-full h-full object-cover"
+                  src={receipt?.imageUrl || SigmaImage}
+                  alt={receipt?.storeName}
+                  width={1000}
+                  height={1000}
+                />
+              ) : (
+                <ReceiptImagePlaceholder />
+              )}
+            </div>
+            <div className="p-4 border border-solid border-black">
+              <ReceiptOCRAccuracy orcConfidence={receipt?.orcConfidence} />
+            </div>
+          </div>
+
+          <div className="flex flex-col flex-1 gap-6 @4xl/main:gap-4">
+            <ReceiptDetailSummary receipt={receipt} />
+            <ReceiptDetailItems receipt={receipt} />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

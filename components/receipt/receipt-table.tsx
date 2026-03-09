@@ -15,7 +15,10 @@ import {
 import { DataTable } from "../ui/data-table";
 import { Receipt } from "@/types/receipt.type";
 import { Receipt_Mock_Data } from "@/mock";
+import { FormattedDate } from "../ui/formatted-date";
+import { FormattedCurrency } from "../ui/formatted-currency";
 import { ReceiptStatusBadge } from "./receipt-status-badge";
+import Link from "next/link";
 
 export const columns: ColumnDef<Receipt>[] = [
   {
@@ -23,37 +26,23 @@ export const columns: ColumnDef<Receipt>[] = [
     header: "ຮ້ານຄ້າ",
   },
   {
-    accessorKey: "categoryId",
-    header: "ປະເພດ",
-    cell: ({ row }) => {
-      const category = row.getValue("categoryId");
-      if (typeof category === "string") return category;
-      if (category && typeof category === "object" && "name" in category) {
-        return (category as any).name;
-      }
-      return "N/A";
-    },
+    accessorKey: "category.name",
+    header: "ຫມວດຫມູ່",
   },
   {
     accessorKey: "receiptDate",
     header: "ວັນທີ",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("receiptDate"));
-      return new Intl.DateTimeFormat("lo-LA", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(date);
+      return <FormattedDate date={row.getValue("receiptDate")} />;
     },
   },
   {
     accessorKey: "totalAmount",
     header: "ມູນຄ່າ",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("totalAmount"));
-      return new Intl.NumberFormat("lo-LA", {
-        style: "currency",
-        currency: "LAK",
-      }).format(amount);
+      return (
+        <FormattedCurrency amount={parseFloat(row.getValue("totalAmount"))} />
+      );
     },
   },
   {
@@ -86,13 +75,18 @@ export const columns: ColumnDef<Receipt>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="center">
-            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-              <Eye className="size-4 text-muted-foreground" />
-              <span>ເບິ່ງລາຍລະອຽດ</span>
+            <DropdownMenuItem
+              className="flex items-center gap-2 cursor-pointer"
+              asChild
+            >
+              <Link href={`/receipts/${row.original.id}`}>
+                <Eye className="size-4 text-muted-foreground" />
+                <span>ເບິ່ງລາຍລະອຽດ</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
               <Pencil className="size-4 text-muted-foreground" />
-              <span>ແກ້ໄຂລายລະອຽດ</span>
+              <span>ແກ້ໄຂລາຍລະອຽດ</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive">

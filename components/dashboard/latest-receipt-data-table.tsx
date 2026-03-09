@@ -15,6 +15,8 @@ import {
 import { DataTable } from "../ui/data-table";
 import { Receipt } from "@/types/receipt.type";
 import { Receipt_Mock_Data } from "@/mock";
+import { FormattedDate } from "../ui/formatted-date";
+import { FormattedCurrency } from "../ui/formatted-currency";
 import { ReceiptStatusBadge } from "../receipt/receipt-status-badge";
 
 export const columns: ColumnDef<Receipt>[] = [
@@ -23,37 +25,23 @@ export const columns: ColumnDef<Receipt>[] = [
     header: "ຮ້ານຄ້າ",
   },
   {
-    accessorKey: "categoryId",
-    header: "ປະເພດ",
-    cell: ({ row }) => {
-      const category = row.getValue("categoryId");
-      if (typeof category === "string") return category;
-      if (category && typeof category === "object" && "name" in category) {
-        return (category as any).name;
-      }
-      return "N/A";
-    },
+    accessorKey: "category.name",
+    header: "ຫມວດຫມູ່",
   },
   {
     accessorKey: "receiptDate",
     header: "ວັນທີ",
     cell: ({ row }) => {
-      const date = new Date(row.getValue("receiptDate"));
-      return new Intl.DateTimeFormat("lo-LA", {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }).format(date);
+      return <FormattedDate date={row.getValue("receiptDate")} />;
     },
   },
   {
     accessorKey: "totalAmount",
     header: "ມູນຄ່າ",
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("totalAmount"));
-      return new Intl.NumberFormat("lo-LA", {
-        style: "currency",
-        currency: "LAK",
-      }).format(amount);
+      return (
+        <FormattedCurrency amount={parseFloat(row.getValue("totalAmount"))} />
+      );
     },
   },
   {

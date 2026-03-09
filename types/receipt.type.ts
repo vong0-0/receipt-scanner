@@ -1,13 +1,8 @@
 import { Category } from "./category.type";
 
-export type ReceiptStatus = "pending" | "processed" | "confirmed" | "error";
+export type ReceiptStatus = "pending_review" | "reviewed";
 
-export const RECEIPT_STATUSES: ReceiptStatus[] = [
-  "pending",
-  "processed",
-  "confirmed",
-  "error",
-];
+export const RECEIPT_STATUSES: ReceiptStatus[] = ["pending_review", "reviewed"];
 
 export interface ReceiptItem {
   id: string;
@@ -21,17 +16,15 @@ export interface ReceiptItem {
 export interface Receipt {
   id: string;
   userId: string;
-  categoryId: string | Category;
+  category: Category;
   storeName: string;
   totalAmount: number;
-  currency: string;
   receiptDate: string;
   taxAmount: number;
-  imageUrl: ReceiptItem[];
-  rawOcrText: string;
+  imageUrl: string; // <-- backend จัดการให้
+  receiptItems: ReceiptItem[];
   orcConfidence: number;
-  status: ReceiptStatus;
-  note: string;
+  status: ReceiptStatus; // <-- ตัดเหลือแค่ pending_review, reviewed
   createdAt: string;
   updatedAt: string;
 }

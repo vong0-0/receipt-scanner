@@ -23,12 +23,14 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageSize?: number;
+  showPagination?: boolean;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   pageSize = 50,
+  showPagination = true,
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
@@ -110,7 +112,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      {showPagination && <DataTablePagination table={table} />}
     </>
   );
 }
