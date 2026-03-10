@@ -15,21 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${notoSansLao.className} ${notoSansLao.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <SidebarProvider
-          style={
-            {
-              "--sidebar-width": "calc(var(--spacing) * 72)",
-              "--header-height": "calc(var(--spacing) * 12)",
-            } as React.CSSProperties
-          }
-        >
-          <AppSidebar variant="inset" />
-          <SidebarInset>{children}</SidebarInset>
-        </SidebarProvider>
+        {children}
       </body>
     </html>
   );
