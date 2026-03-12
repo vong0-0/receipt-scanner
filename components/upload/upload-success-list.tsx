@@ -28,7 +28,7 @@ export function UploadSuccessList() {
     })),
   };
 
-  function handleSubmit(values: any) {
+  function handleSubmit(values: any, status: "PENDING_REVIEW" | "REVIEWED") {
     confirmMutation.mutate({
       imageUrl,
       category: values.category,
@@ -40,6 +40,7 @@ export function UploadSuccessList() {
       taxAmount: values.taxAmount,
       ocrConfidence: ocr.confidence,
       receiptItems: values.receiptItems,
+      status,
     });
   }
 

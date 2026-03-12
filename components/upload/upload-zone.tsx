@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 export function UploadZone() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -106,7 +107,15 @@ export function UploadZone() {
           </Button>
           <Button
             className="flex-1 py-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-xl"
-            onClick={() => currentFile && mutation.mutate(currentFile)}
+            onClick={() => {
+              if (currentFile) {
+                toast.promise(mutation.mutateAsync(currentFile), {
+                  loading: "ກຳລັງສະແກນໃບບິນດ້ວຍ AI...",
+                  success: "ສະແກນສຳເລັດແລ້ວ!",
+                  error: (err) => err.message || "ການສະແກນລົ້ມເຫລວ ໃຫ້ລອງໃໝ່ອີກຄັ້ງ",
+                });
+              }
+            }}
             disabled={mutation.isPending}
           >
             {mutation.isPending ? (

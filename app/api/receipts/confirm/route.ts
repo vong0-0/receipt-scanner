@@ -18,10 +18,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (!session?.user?.id) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 },
-    );
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const userId = session.user.id;
@@ -45,6 +42,7 @@ export async function POST(req: NextRequest) {
     receiptDate,
     taxAmount,
     ocrConfidence,
+    status = "REVIEWED",
     receiptItems = [],
   } = body;
 
@@ -78,7 +76,7 @@ export async function POST(req: NextRequest) {
         taxAmount: taxAmount ?? null,
         imageUrl,
         ocrConfidence: ocrConfidence ?? null,
-        status: "PENDING_REVIEW",
+        status,
         items: {
           create: receiptItems.map((item: ConfirmReceiptItem) => ({
             name: item.name,

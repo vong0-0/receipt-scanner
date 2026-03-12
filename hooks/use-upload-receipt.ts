@@ -29,9 +29,8 @@ export function useUploadReceipt() {
     onSuccess: (data) => {
       setOcrResult(data);
     },
-    onError: (error) => {
+    onError: () => {
       reset();
-      alert(error.message || "ອັບໂຫລດລົ້ມເຫລວ ກະລຸນາລອງໃໝ່");
     },
   });
 }

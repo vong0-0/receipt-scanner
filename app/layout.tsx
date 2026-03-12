@@ -4,6 +4,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import "./globals.css";
 import AppSidebar from "@/components/app-sidebar";
 import QueryProvider from "@/components/providers/query-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -20,7 +21,10 @@ export default function RootLayout({
       <body
         className={`${notoSansLao.className} ${notoSansLao.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryProvider>{children}</QueryProvider>
+        <QueryProvider>
+          {children}
+          <Toaster position="bottom-right" richColors />
+        </QueryProvider>
       </body>
     </html>
   );

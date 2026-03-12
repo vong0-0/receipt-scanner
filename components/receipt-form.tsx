@@ -9,10 +9,10 @@ import {
   EditReceiptFormValues,
   CreateReceiptItemFormValues,
 } from "@/schema/receipt.schema";
-import { Button } from "./ui/button";
 import { useUploadStore } from "@/hooks/use-upload-store";
-import { JSX } from "react";
+import { JSX, useRef } from "react";
 import { ReceiptItem } from "@/types/receipt.type";
+import { Button } from "./ui/button";
 import Image from "next/image";
 import SigmaImage from "@/public/sigma.png";
 
@@ -20,7 +20,7 @@ type ReceiptFormValues = CreateReceiptFormValues | EditReceiptFormValues;
 
 interface ReceiptFormProps {
   initialValues?: ReceiptFormValues;
-  onSubmit: (values: any) => void;
+  onSubmit: (values: any, status: "PENDING_REVIEW" | "REVIEWED") => void;
   isEdit?: boolean;
   imageUrl?: string;
   isSubmitting?: boolean;
@@ -80,6 +80,7 @@ export default function ReceiptForm({
   isSubmitting = false,
 }: ReceiptFormProps) {
   const { reset } = useUploadStore();
+  const submitStatusRef = useRef<"PENDING_REVIEW" | "REVIEWED">("REVIEWED");
 
   const schema = isEdit ? editReceiptSchema : createReceiptSchema;
   const finalInitialValues = initialValues || defaultReceipt;
@@ -88,7 +89,7 @@ export default function ReceiptForm({
     <Formik
       initialValues={finalInitialValues}
       validate={validateWithZod(schema)}
-      onSubmit={onSubmit}
+      onSubmit={(values) => onSubmit(values, submitStatusRef.current)}
       enableReinitialize
     >
       {({ values, errors }) => (
@@ -150,19 +151,36 @@ export default function ReceiptForm({
 
           <div className="flex flex-col sm:flex-row gap-2 md:gap-4 mt-8 justify-center">
             <Button
+              type="button"
               variant="outline"
               className="py-6 px-10 rounded-xl bg-red-600 text-white font-bold hover:bg-red-500 hover:text-white transition-all duration-300"
               onClick={reset}
+              disabled={isSubmitting}
             >
               ຍົກເລິກ
             </Button>
 
             <Button
               type="submit"
-              className="py-6 px-14 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-all duration-300"
+              variant="outline"
+              className="py-6 px-10 rounded-xl border-amber-500 text-amber-600 hover:bg-amber-50 font-bold transition-all duration-300"
+              onClick={() => (submitStatusRef.current = "PENDING_REVIEW")}
               disabled={isSubmitting}
             >
-              {isSubmitting ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກຂໍ້ມູນໃບບິນ"}
+              {isSubmitting && submitStatusRef.current === "PENDING_REVIEW"
+                ? "ກຳລັງບັນທຶກ..."
+                : "ບັນທຶກແບບຍັງບໍ່ກວດສອບ"}
+            </Button>
+
+            <Button
+              type="submit"
+              className="py-6 px-14 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-all duration-300"
+              onClick={() => (submitStatusRef.current = "REVIEWED")}
+              disabled={isSubmitting}
+            >
+              {isSubmitting && submitStatusRef.current === "REVIEWED"
+                ? "ກຳລັງບັນທຶກ..."
+                : "ບັນທຶກຂໍ້ມູນໃບບິນຜ່ານການກວດສອບແລ້ວ"}
             </Button>
           </div>
         </Form>

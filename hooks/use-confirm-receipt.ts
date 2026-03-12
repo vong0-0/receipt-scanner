@@ -1,5 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { useUploadStore } from "./use-upload-store";
+import { toast } from "sonner";
 
 interface ConfirmReceiptPayload {
   imageUrl: string;
@@ -9,6 +10,7 @@ interface ConfirmReceiptPayload {
   receiptDate: string;
   taxAmount: number;
   ocrConfidence: number;
+  status: "PENDING_REVIEW" | "REVIEWED";
   receiptItems: {
     name: string;
     quantity: number;
@@ -39,10 +41,10 @@ export function useConfirmReceipt() {
     mutationFn: confirmReceipt,
     onSuccess: () => {
       reset();
-      alert("ບັນທຶກຂໍ້ມູນໃບບິນສຳເລັດແລ້ວ!");
+      toast.success("ບັນທຶກຂໍ້ມູນໃບບິນສຳເລັດແລ້ວ!");
     },
     onError: (error) => {
-      alert(error.message || "ບັນທຶກຂໍ້ມູນລົ້ມເຫລວ ກະລຸນາລອງໃໝ່");
+      toast.error(error.message || "ບັນທຶກຂໍ້ມູນລົ້ມເຫລວ ກະລຸນາລອງໃໝ່");
     },
   });
 }
