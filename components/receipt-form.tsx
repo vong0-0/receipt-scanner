@@ -1,10 +1,8 @@
 import { Formik, Form, FieldArray, FieldArrayRenderProps } from "formik";
 import { z } from "zod";
-import FormikSelect from "./formik-select";
 import FormikDatePicker from "./formik-date-picker";
 import FormikInput from "./formik-input";
 import {
-  ReceiptCategory,
   createReceiptSchema,
   editReceiptSchema,
   CreateReceiptFormValues,
@@ -24,6 +22,8 @@ interface ReceiptFormProps {
   initialValues?: ReceiptFormValues;
   onSubmit: (values: any) => void;
   isEdit?: boolean;
+  imageUrl?: string;
+  isSubmitting?: boolean;
 }
 
 const validateWithZod = (schema: z.ZodSchema) => (values: any) => {
@@ -57,7 +57,7 @@ const validateWithZod = (schema: z.ZodSchema) => (values: any) => {
 };
 
 const defaultReceipt: CreateReceiptFormValues = {
-  category: ReceiptCategory.OTHERS,
+  category: "",
   storeName: "",
   totalAmount: "" as any,
   receiptDate: new Date(),
@@ -72,17 +72,12 @@ const defaultReceiptItem: CreateReceiptItemFormValues = {
   amount: "" as any,
 };
 
-const CATEGORY_OPTIONS = Object.entries(ReceiptCategory).map(
-  ([key, value]) => ({
-    label: value,
-    value: value,
-  }),
-);
-
 export default function ReceiptForm({
   initialValues,
   onSubmit,
   isEdit = false,
+  imageUrl,
+  isSubmitting = false,
 }: ReceiptFormProps) {
   const { reset } = useUploadStore();
 
@@ -102,10 +97,11 @@ export default function ReceiptForm({
             <div className="@3xl/main:sticky top-[2%] left-0 flex flex-col flex-1 w-full max-h-[500px] max-w-[400px] mx-auto">
               <Image
                 className="w-full h-full object-cover"
-                src={SigmaImage}
-                alt={"store name"}
+                src={imageUrl || SigmaImage}
+                alt={"receipt image"}
                 width={1000}
                 height={1000}
+                unoptimized={!!imageUrl}
               />
             </div>
             <div className="flex-1 space-y-4 [&_div]:flex [&_div]:gap-2 [&_div]:flex-col">
@@ -115,10 +111,11 @@ export default function ReceiptForm({
                 label="ຊື່ຮ້ານ"
                 placeholder="ປ້ອນຊື່ຮ້ານຄ້າ"
               />
-              <FormikSelect
+              <FormikInput
                 name="category"
+                type="text"
                 label="ຫມວດຫມູ່ໃບບິນ"
-                options={CATEGORY_OPTIONS}
+                placeholder="ປ້ອນຫມວດຫມູ່ໃບບິນ"
               />
               <FormikDatePicker
                 name="receiptDate"
@@ -163,8 +160,9 @@ export default function ReceiptForm({
             <Button
               type="submit"
               className="py-6 px-14 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white transition-all duration-300"
+              disabled={isSubmitting}
             >
-              ໄປທີ່ລາຍການໃບບິນທັງໝົດ
+              {isSubmitting ? "ກຳລັງບັນທຶກ..." : "ບັນທຶກຂໍ້ມູນໃບບິນ"}
             </Button>
           </div>
         </Form>

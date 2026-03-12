@@ -1,14 +1,5 @@
 import { z } from "zod";
 
-export enum ReceiptCategory {
-  FOOD_AND_BEVERAGE = "Food & Beverage",
-  SHOPPING = "Shopping",
-  TRANSPORTATION = "Transportation",
-  ENTERTAINMENT = "Entertainment",
-  HEALTH = "Health",
-  OTHERS = "Others",
-}
-
 export const ReceiptItemSchema = z.object({
   name: z.string().min(1, "ກະລຸນາປ້ອນຊື່ລາຍການສິນຄ້າ"),
   quantity: z.coerce
@@ -23,7 +14,7 @@ export const ReceiptItemSchema = z.object({
 });
 
 export const ReceiptSchema = z.object({
-  category: z.nativeEnum(ReceiptCategory, {
+  category: z.string({
     message: "ກະລຸນາເລືອກຫມວດຫມູ່",
   }),
   totalAmount: z.coerce

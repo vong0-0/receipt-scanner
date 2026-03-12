@@ -3,7 +3,13 @@ import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { validateRequiredFields } from "@/lib/utils";
 import db from "@/lib/prisma";
-import { type ReceiptItem } from "@/app/generated/prisma/client";
+
+interface ConfirmReceiptItem {
+  name: string;
+  quantity: number;
+  price: number;
+  amount: number;
+}
 
 export async function POST(req: NextRequest) {
   // Step 1: Session checking
@@ -13,9 +19,7 @@ export async function POST(req: NextRequest) {
 
   if (!session?.user?.id) {
     return NextResponse.json(
-      {
-        error: "Unauthorized",
-      },
+      { error: "Unauthorized" },
       { status: 401 },
     );
   }
@@ -25,19 +29,10 @@ export async function POST(req: NextRequest) {
   // Step 2: Get and validate request body
   const body = await req.json();
 
-  // Validate required fields
   const validationError = validateRequiredFields(body, [
     "imageUrl",
-    "category.name",
     "storeName",
     "totalAmount",
-    "receiptDate",
-    "taxAmount",
-    "confidence",
-    "items.name",
-    "items.quantity",
-    "items.unitPrice",
-    "items.amount",
   ]);
 
   if (validationError) return validationError;
@@ -50,57 +45,62 @@ export async function POST(req: NextRequest) {
     receiptDate,
     taxAmount,
     ocrConfidence,
-    items = [],
+    receiptItems = [],
   } = body;
 
-  // Step3: Handle category
-  let categoryId: string | null = null;
+  try {
+    // Step 3: Handle category (upsert: find or create)
+    let categoryId: string | null = null;
 
-  if (category !== null && category !== undefined) {
-    // Find existing category
-    let existingCategory = await db.category.findUnique({
-      where: { name: category.name },
-    });
-
-    // if not exsit -> create new one
-    if (!existingCategory) {
-      existingCategory = await db.category.create({
-        data: {
-          name: category.name,
-        },
+    if (category) {
+      const existingCategory = await db.category.findUnique({
+        where: { name: category },
       });
+
+      if (existingCategory) {
+        categoryId = existingCategory.id;
+      } else {
+        const newCategory = await db.category.create({
+          data: { name: category },
+        });
+        categoryId = newCategory.id;
+      }
     }
 
-    categoryId = existingCategory.id;
-  }
-
-  // Step 4: Save receipt + items to DB
-  const receipt = await db.receipt.create({
-    data: {
-      userId,
-      categoryId,
-      storeName: storeName,
-      totalAmount: totalAmount,
-      receiptDate: receiptDate,
-      taxAmount: taxAmount ?? null,
-      imageUrl,
-      ocrConfidence: ocrConfidence,
-      status: "PENDING_REVIEW",
-      items: {
-        create: items.map((item: ReceiptItem) => ({
-          name: item.name,
-          quantity: item.name,
-          unitPrice: item.name,
-          amount: item.unitPrice,
-        })),
+    // Step 4: Save receipt + items to DB
+    const receipt = await db.receipt.create({
+      data: {
+        userId,
+        categoryId,
+        storeName,
+        totalAmount,
+        receiptDate: receiptDate ? new Date(receiptDate) : null,
+        taxAmount: taxAmount ?? null,
+        imageUrl,
+        ocrConfidence: ocrConfidence ?? null,
+        status: "PENDING_REVIEW",
+        items: {
+          create: receiptItems.map((item: ConfirmReceiptItem) => ({
+            name: item.name,
+            quantity: item.quantity,
+            unitPrice: item.price,
+            amount: item.amount,
+          })),
+        },
       },
-    },
-    include: {
-      items: true,
-      category: true,
-    },
-  });
+      include: {
+        items: true,
+        category: true,
+      },
+    });
 
-  // Step 5: Response
-  return NextResponse.json({ receipt }, { status: 201 });
+    // Step 5: Response
+    return NextResponse.json({ receipt }, { status: 201 });
+  } catch (error) {
+    console.error("Failed to confirm receipt:", error);
+    return NextResponse.json(
+      { error: "Failed to save receipt" },
+      { status: 500 },
+    );
+  }
 }

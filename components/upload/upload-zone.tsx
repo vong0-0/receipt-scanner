@@ -1,8 +1,9 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Upload, X, FileImage, CheckCircle2 } from "lucide-react";
+import { Upload, X, FileImage, CheckCircle2, Loader2 } from "lucide-react";
 import { useUploadStore } from "@/hooks/use-upload-store";
+import { useUploadReceipt } from "@/hooks/use-upload-receipt";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
@@ -10,7 +11,8 @@ import { cn } from "@/lib/utils";
 
 export function UploadZone() {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { currentFile, setFile, startUpload, status } = useUploadStore();
+  const { currentFile, setFile, status } = useUploadStore();
+  const mutation = useUploadReceipt();
   const [isDragging, setIsDragging] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -104,9 +106,14 @@ export function UploadZone() {
           </Button>
           <Button
             className="flex-1 py-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg shadow-xl"
-            onClick={startUpload}
+            onClick={() => currentFile && mutation.mutate(currentFile)}
+            disabled={mutation.isPending}
           >
-            ເລີ່ມອັບໂຫລດ
+            {mutation.isPending ? (
+              <><Loader2 className="size-5 animate-spin mr-2" /> ກຳລັງອັບໂຫລດ...</>
+            ) : (
+              "ເລີ່ມອັບໂຫລດ"
+            )}
           </Button>
         </div>
       </div>

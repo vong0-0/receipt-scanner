@@ -1,58 +1,47 @@
 "use client";
 
 import { useUploadStore } from "@/hooks/use-upload-store";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
-import { ReceiptStatusBadge } from "../receipt/receipt-status-badge";
-import { formatCurrency, formatDateTime } from "@/lib/format";
-import {
-  ArrowRight,
-  CheckCircle2,
-  MoreHorizontal,
-  FileText,
-  Plus,
-  X,
-} from "lucide-react";
-import Link from "next/link";
+import { useConfirmReceipt } from "@/hooks/use-confirm-receipt";
+import { CheckCircle2 } from "lucide-react";
 import ReceiptForm from "../receipt-form";
-import { CreateReceiptSchema, ReceiptCategory } from "@/schema";
 
 export function UploadSuccessList() {
-  const { status } = useUploadStore();
+  const { status, ocrResult } = useUploadStore();
+  const confirmMutation = useConfirmReceipt();
 
-  if (status !== "success") return null;
+  if (status !== "success" || !ocrResult) return null;
 
-  function handleSubmit(values: CreateReceiptSchema) {
-    console.log({ ...values, receiptDate: values.receiptDate.toISOString() });
-  }
+  const { ocr, imageUrl } = ocrResult;
 
-  const test_data = {
-    category: "Shopping" as ReceiptCategory,
-    storeName: "ຮ້ານ ມິມາດ",
-    totalAmount: 22000,
-    receiptDate: "2025-12-09",
-    taxAmount: 0,
-    receiptItems: [
-      {
-        name: "ມິ້ວເວດ ສີດຳ (44167)",
-        quantity: 1,
-        price: 3000,
-        amount: 3000,
-      },
-      {
-        name: "ມີຊອງ ເກົາຫຼີ ສີດຳ ຜັດເຜັດ*5(12)",
-        quantity: 1,
-        price: 19000,
-        amount: 19000,
-      },
-    ],
+  // Map OCR response to ReceiptForm initial values
+  const formValues = {
+    category: ocr.category || "",
+    storeName: ocr.storeName || "",
+    totalAmount: ocr.totalAmount || 0,
+    receiptDate: ocr.receiptDate ? new Date(ocr.receiptDate) : new Date(),
+    taxAmount: ocr.taxAmount || 0,
+    receiptItems: ocr.items.map((item) => ({
+      name: item.name,
+      quantity: item.quantity,
+      price: item.unitPrice,
+      amount: item.amount,
+    })),
   };
+
+  function handleSubmit(values: any) {
+    confirmMutation.mutate({
+      imageUrl,
+      category: values.category,
+      storeName: values.storeName,
+      totalAmount: values.totalAmount,
+      receiptDate: values.receiptDate instanceof Date
+        ? values.receiptDate.toISOString()
+        : values.receiptDate,
+      taxAmount: values.taxAmount,
+      ocrConfidence: ocr.confidence,
+      receiptItems: values.receiptItems,
+    });
+  }
 
   return (
     <div className="w-full flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -66,10 +55,21 @@ export function UploadSuccessList() {
             ໃບບີນຖືກສະແກນແລ້ວ ທ່ານສາມາດກວດສອບຄວາມຖືກຕ້ອງ ແລະ
             ແກ້ໄຂຂໍ້ມູນທີ່ຜິດໄດ້ກ່ອນບັນທຶກຂໍ້ມູນ
           </p>
+          {ocr.confidence < 0.7 && (
+            <p className="text-amber-600 text-sm font-medium mt-1">
+              ⚠️ ຄວາມໝັ້ນໃຈໃນການອ່ານ: {Math.round(ocr.confidence * 100)}% —
+              ກະລຸນາກວດສອບຂໍ້ມູນໃຫ້ລະອຽດ
+            </p>
+          )}
         </div>
       </div>
 
-      <ReceiptForm onSubmit={handleSubmit} initialValues={test_data} />
+      <ReceiptForm
+        onSubmit={handleSubmit}
+        initialValues={formValues}
+        imageUrl={imageUrl}
+        isSubmitting={confirmMutation.isPending}
+      />
     </div>
   );
 }
