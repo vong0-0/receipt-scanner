@@ -3,6 +3,7 @@ import { notoSansLao, geistSans, geistMono } from "./fonts";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import "./globals.css";
 import AppSidebar from "@/components/app-sidebar";
+import QueryProvider from "@/components/providers/query-provider";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -19,7 +20,7 @@ export default function RootLayout({
       <body
         className={`${notoSansLao.className} ${notoSansLao.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <QueryProvider>{children}</QueryProvider>
       </body>
     </html>
   );

@@ -33,9 +33,8 @@ export function UploadProgress() {
       // Determine stage
       if (currentProgress < 30) setStage(1);
       else if (currentProgress < 60) setStage(2);
-      else if (currentProgress < 90) setStage(3);
-      else if (currentProgress >= 100) setStage(4);
-    }, 50);
+      else if (currentProgress < 100) setStage(3);
+    }, 100);
 
     return () => clearInterval(interval);
   }, [status, updateProgress, setResults]);
@@ -52,10 +51,6 @@ export function UploadProgress() {
       color: "bg-purple-500",
     },
     3: {
-      label: "💾 ກຳລັງບັນທຶກຂໍ້ມູນ...",
-      color: "bg-amber-500",
-    },
-    4: {
       label: "✅ ສຳເລັດແລ້ວ!",
       color: "bg-green-500",
     },

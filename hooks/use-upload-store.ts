@@ -19,7 +19,7 @@ interface UploadState {
 }
 
 export const useUploadStore = create<UploadState>((set, get) => ({
-  status: "success",
+  status: "idle",
   progress: 0,
   currentFile: null,
   results: [],

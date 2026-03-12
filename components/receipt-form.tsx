@@ -14,8 +14,9 @@ import {
 import { Button } from "./ui/button";
 import { useUploadStore } from "@/hooks/use-upload-store";
 import { JSX } from "react";
-import { getRandomValues } from "crypto";
 import { ReceiptItem } from "@/types/receipt.type";
+import Image from "next/image";
+import SigmaImage from "@/public/sigma.png";
 
 type ReceiptFormValues = CreateReceiptFormValues | EditReceiptFormValues;
 
@@ -96,50 +97,61 @@ export default function ReceiptForm({
       enableReinitialize
     >
       {({ values, errors }) => (
-        <Form>
-          <div className="space-y-4 [&_div]:flex [&_div]:gap-2 [&_div]:flex-col">
-            <FormikInput
-              name="storeName"
-              type="text"
-              label="ຊື່ຮ້ານ"
-              placeholder="ປ້ອນຊື່ຮ້ານຄ້າ"
-            />
-            <FormikSelect
-              name="category"
-              label="ຫມວດຫມູ່ໃບບິນ"
-              options={CATEGORY_OPTIONS}
-            />
-            <FormikDatePicker
-              name="receiptDate"
-              label="ວັນທີ"
-              showTimePicker
-              dateFormat="dd/MM/yyyy HH:mm"
-            />
-            <div className="flex flex-row! gap-4">
-              <FormikInput
-                className="flex-1"
-                name="totalAmount"
-                type="number"
-                label="ມູນຄ່າລວມ"
-                placeholder="ປ້ອນມູນຄ່າລວມ"
-              />
-              <FormikInput
-                className="flex-1"
-                name="taxAmount"
-                label="ພາສີມູນຄ່າເພີ່ມ (vat)"
-                type="number"
-                placeholder="ປ້ອນພາສີມູນຄ່າເພີ່ມ"
+        <Form className="w-full max-w-[1300px] mx-auto">
+          <div className="relation flex flex-col @3xl/main:flex-row gap-6 pb-6">
+            <div className="@3xl/main:sticky top-[2%] left-0 flex flex-col flex-1 w-full max-h-[500px] max-w-[400px] mx-auto">
+              <Image
+                className="w-full h-full object-cover"
+                src={SigmaImage}
+                alt={"store name"}
+                width={1000}
+                height={1000}
               />
             </div>
+            <div className="flex-1 space-y-4 [&_div]:flex [&_div]:gap-2 [&_div]:flex-col">
+              <FormikInput
+                name="storeName"
+                type="text"
+                label="ຊື່ຮ້ານ"
+                placeholder="ປ້ອນຊື່ຮ້ານຄ້າ"
+              />
+              <FormikSelect
+                name="category"
+                label="ຫມວດຫມູ່ໃບບິນ"
+                options={CATEGORY_OPTIONS}
+              />
+              <FormikDatePicker
+                name="receiptDate"
+                label="ວັນທີ"
+                showTimePicker
+                dateFormat="dd/MM/yyyy HH:mm"
+              />
+              <div className="flex flex-row! gap-4">
+                <FormikInput
+                  className="flex-1"
+                  name="totalAmount"
+                  type="number"
+                  label="ມູນຄ່າລວມ"
+                  placeholder="ປ້ອນມູນຄ່າລວມ"
+                />
+                <FormikInput
+                  className="flex-1"
+                  name="taxAmount"
+                  label="ພາສີມູນຄ່າເພີ່ມ (vat)"
+                  type="number"
+                  placeholder="ປ້ອນພາສີມູນຄ່າເພີ່ມ"
+                />
+              </div>
 
-            <FieldArray name="receiptItems">
-              {(helpers: FieldArrayRenderProps) => (
-                <ReceiptItemsForm {...helpers} />
-              )}
-            </FieldArray>
+              <FieldArray name="receiptItems">
+                {(helpers: FieldArrayRenderProps) => (
+                  <ReceiptItemsForm {...helpers} />
+                )}
+              </FieldArray>
+            </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 mt-8 justify-center">
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-4 mt-8 justify-center">
             <Button
               variant="outline"
               className="py-6 px-10 rounded-xl bg-red-600 text-white font-bold hover:bg-red-500 hover:text-white transition-all duration-300"
@@ -216,8 +228,8 @@ export function ReceiptItemsForm({
       {/* ปุ่มเพิ่มแสดงเสมอ ไม่ใช่แค่ตอน array ว่าง */}
       <Button
         type="button"
-        variant="outline"
-        className="py-6 px-10 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white"
+        variant="ghost"
+        className="max-w-[200px] mx-auto"
         onClick={() => helpers.push(defaultReceiptItem)}
       >
         + ເພີ່ມລາຍການໃໝ່

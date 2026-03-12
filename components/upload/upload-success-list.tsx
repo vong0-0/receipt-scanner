@@ -55,7 +55,7 @@ export function UploadSuccessList() {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="w-full flex flex-col gap-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex flex-col items-center gap-4 text-center">
         <div className="size-20 bg-green-100 rounded-full flex items-center justify-center text-green-600 shadow-inner">
           <CheckCircle2 className="size-12" />

@@ -14,13 +14,10 @@ export default function UploadPage() {
     <div className="flex flex-col">
       <AppHeader title="ອັບໂຫລດໃບບິນ" />
 
-      <main className="flex-1 flex flex-col items-center justify-start p-4 md:p-10 lg:p-20">
+      <div className="px-4 py-6 lg:px-6">
         <div
           className={cn(
-            "w-full transition-all duration-700 ease-in-out",
-            status === "idle" || status === "confirming"
-              ? "max-w-4xl"
-              : "max-w-2xl",
+            "@container/main w-full transition-all duration-700 ease-in-out",
           )}
         >
           {/* Header Section */}
@@ -47,7 +44,7 @@ export default function UploadPage() {
             )}
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
