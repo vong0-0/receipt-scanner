@@ -20,7 +20,7 @@ export default function LoginGoogleButton() {
       <span>
         <FaGoogle />
       </span>
-      <span>Login with Google</span>
+      <span>ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google</span>
     </Button>
   );
 }

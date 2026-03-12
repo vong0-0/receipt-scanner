@@ -23,6 +23,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  receipts      Receipt[]
 
   @@unique([email])
   @@map("user")
@@ -74,4 +75,58 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+enum ReceiptStatus {
+  PENDING_REVIEW
+  REVIEWED
+}
+
+model Category {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  icon     String?
+  color    String?
+  receipts Receipt[]
+
+  @@map("categories")
+}
+
+model Receipt {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categoryId String?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  storeName   String?
+  totalAmount Decimal   @db.Decimal(10, 2)
+  receiptDate DateTime?
+  taxAmount   Decimal?  @db.Decimal(10, 2)
+
+  imageUrl      String
+  ocrConfidence Float?
+
+  status ReceiptStatus @default(PENDING_REVIEW)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  items ReceiptItem[]
+
+  @@index([userId, receiptDate])
+  @@index([userId, categoryId])
+  @@map("receipts")
+}
+
+model ReceiptItem {
+  id        String  @id @default(cuid())
+  receiptId String
+  receipt   Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  name      String
+  quantity  Float   @default(1)
+  unitPrice Decimal @db.Decimal(10, 2)
+  amount    Decimal @db.Decimal(10, 2)
+
+  @@map("receipt_items")
 }

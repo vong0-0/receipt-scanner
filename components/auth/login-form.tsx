@@ -29,16 +29,16 @@ export function LoginForm({
   return (
     <Card className={cn("w-full max-w-[500px] mx-auto", className)} {...props}>
       <CardHeader>
-        <CardTitle>Login to your account</CardTitle>
+        <CardTitle>ເຂົ້າສູ່ບັນຊີຂອງທ່ານ</CardTitle>
         <CardDescription>
-          Enter your email below to login to your account
+          ປ້ອນອີເມວແລະລະຫັດຜ່ານຂອງທ່ານຂ່າງລຸ່ມນີ້ເພື່ອເຂົ້າສູ່ບັນຊີຂອງທ່ານ
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form>
           <FieldGroup>
             <Field>
-              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <FieldLabel htmlFor="email">ອີເມວ</FieldLabel>
               <Input
                 id="email"
                 type="email"
@@ -48,21 +48,21 @@ export function LoginForm({
             </Field>
             <Field>
               <div className="flex items-center">
-                <FieldLabel htmlFor="password">Password</FieldLabel>
+                <FieldLabel htmlFor="password">ລະຫັດຜ່ານ</FieldLabel>
                 <a
                   href="#"
                   className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
                 >
-                  Forgot your password?
+                  ລືມລະຫັດຜ່ານຂອງທ່ານ?
                 </a>
               </div>
               <Input id="password" type="password" required />
             </Field>
             <Field>
-              <Button type="submit">Login</Button>
+              <Button type="submit">ເຂົ້າສູ່ລະບົບ</Button>
               <LoginGoogleButton />
               <FieldDescription className="text-center">
-                Don&apos;t have an account? <a href="#">Sign up</a>
+                ທ່ານຍັງບໍ່ມີບັນຊີ? <a href="#">ສະຫມັກຂອງທ່ານບັນຊີ</a>
               </FieldDescription>
             </Field>
           </FieldGroup>
