@@ -11,12 +11,12 @@ const statusConfig: Record<
   ReceiptStatus,
   { label: string; className: string }
 > = {
-  pending_review: {
+  PENDING_REVIEW: {
     label: "ລໍຖ້າກວດສອບ",
     className:
       "bg-amber-100 text-amber-700 hover:bg-amber-100 border-amber-200",
   },
-  reviewed: {
+  REVIEWED: {
     label: "ກວດສອບແລ້ວ",
     className: "bg-blue-100 text-blue-700 hover:bg-blue-100 border-blue-200",
   },
@@ -26,7 +26,9 @@ export function ReceiptStatusBadge({
   status,
   className,
 }: ReceiptStatusBadgeProps) {
-  const config = statusConfig[status];
+  // Normalize to uppercase to handle legacy or mismatching data
+  const normalizedStatus = (status?.toUpperCase() || "PENDING_REVIEW") as ReceiptStatus;
+  const config = statusConfig[normalizedStatus] || statusConfig.PENDING_REVIEW;
 
   return (
     <Badge

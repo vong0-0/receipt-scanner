@@ -1,8 +1,11 @@
 import { Category } from "./category.type";
 
-export type ReceiptStatus = "pending_review" | "reviewed";
+export type ReceiptStatus = "PENDING_REVIEW" | "REVIEWED";
 
-export const RECEIPT_STATUSES: ReceiptStatus[] = ["pending_review", "reviewed"];
+export const RECEIPT_STATUSES: { value: ReceiptStatus; label: string }[] = [
+  { value: "PENDING_REVIEW", label: "ລໍຖ້າກວດສອບ" },
+  { value: "REVIEWED", label: "ກວດສອບແລ້ວ" },
+];
 
 export interface ReceiptItem {
   id: string;
@@ -23,7 +26,7 @@ export interface Receipt {
   taxAmount: number;
   imageUrl: string; // <-- backend จัดการให้
   receiptItems: ReceiptItem[];
-  orcConfidence: number;
+  ocrConfidence: number;
   status: ReceiptStatus; // <-- ตัดเหลือแค่ pending_review, reviewed
   createdAt: string;
   updatedAt: string;

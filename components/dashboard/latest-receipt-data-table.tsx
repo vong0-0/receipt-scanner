@@ -45,10 +45,10 @@ export const columns: ColumnDef<Receipt>[] = [
     },
   },
   {
-    accessorKey: "orcConfidence",
+    accessorKey: "ocrConfidence",
     header: "ຄວາມຖືກຕ້ອງ",
     cell: ({ row }) => {
-      const confidence = parseFloat(row.getValue("orcConfidence"));
+      const confidence = parseFloat(row.getValue("ocrConfidence"));
       const percentage = Math.round(confidence * 100);
       return <span>{percentage}%</span>;
     },

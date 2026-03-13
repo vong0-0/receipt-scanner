@@ -6,7 +6,12 @@ import {
   getCoreRowModel,
   useReactTable,
   getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  PaginationState,
+  OnChangeFn,
 } from "@tanstack/react-table";
+import * as React from "react";
 
 import {
   Table,
@@ -24,6 +29,12 @@ interface DataTableProps<TData, TValue> {
   data: TData[];
   pageSize?: number;
   showPagination?: boolean;
+  // Manual state props
+  sorting?: SortingState;
+  onSortingChange?: OnChangeFn<SortingState>;
+  pagination?: PaginationState;
+  onPaginationChange?: OnChangeFn<PaginationState>;
+  rowCount?: number;
 }
 
 export function DataTable<TData, TValue>({
@@ -31,12 +42,31 @@ export function DataTable<TData, TValue>({
   data,
   pageSize = 50,
   showPagination = true,
+  sorting: manualSorting,
+  onSortingChange,
+  pagination: manualPagination,
+  onPaginationChange,
+  rowCount,
 }: DataTableProps<TData, TValue>) {
+  const [internalSorting, setInternalSorting] = React.useState<SortingState>(
+    [],
+  );
+
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: manualSorting ? undefined : getSortedRowModel(), // Disable automatic sorting if manual is used
+    onSortingChange: onSortingChange || setInternalSorting,
+    onPaginationChange: onPaginationChange,
+    manualPagination: !!onPaginationChange,
+    manualSorting: !!onSortingChange,
+    rowCount: rowCount,
+    state: {
+      sorting: manualSorting ?? internalSorting,
+      pagination: manualPagination,
+    },
     initialState: {
       pagination: {
         pageSize,

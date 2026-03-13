@@ -1,64 +1,106 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, MoreHorizontal, Pencil, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { DataTable } from "../ui/data-table";
-import { Receipt } from "@/types/receipt.type";
-import { Receipt_Mock_Data } from "@/mock";
+import { Receipt, ReceiptStatus } from "@/types/receipt.type";
 import { FormattedDate } from "../ui/formatted-date";
 import { FormattedCurrency } from "../ui/formatted-currency";
 import { ReceiptStatusBadge } from "./receipt-status-badge";
 import Link from "next/link";
+import { useFilterStore } from "@/hooks/use-filter-store";
+import {
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  MoreHorizontal,
+  Eye,
+  Pencil,
+  Trash,
+} from "lucide-react";
+
+interface SortButtonProps {
+  column: any;
+  children: React.ReactNode;
+}
+
+const SortButton = ({ column, children }: SortButtonProps) => {
+  const isSorted = column.getIsSorted();
+  
+  return (
+    <Button
+      variant="ghost"
+      onClick={() => column.toggleSorting(isSorted === "asc")}
+      className="-ml-4 h-8 data-[state=open]:bg-accent"
+    >
+      <span>{children}</span>
+      {isSorted === "desc" ? (
+        <ArrowDown className="ml-2 h-4 w-4 text-blue-600" />
+      ) : isSorted === "asc" ? (
+        <ArrowUp className="ml-2 h-4 w-4 text-blue-600" />
+      ) : (
+        <ArrowUpDown className="ml-2 h-4 w-4" />
+      )}
+    </Button>
+  );
+};
 
 export const columns: ColumnDef<Receipt>[] = [
   {
     accessorKey: "storeName",
-    header: "ຮ້ານຄ້າ",
+    header: ({ column }) => <SortButton column={column}>ຮ້ານຄ້າ</SortButton>,
   },
   {
     accessorKey: "category.name",
-    header: "ຫມວດຫມູ່",
+    header: ({ column }) => <SortButton column={column}>ຫມວດຫມູ່</SortButton>,
+    cell: ({ row }) => {
+      return row.original.category?.name || "-";
+    },
   },
   {
     accessorKey: "receiptDate",
-    header: "ວັນທີ",
+    header: ({ column }) => <SortButton column={column}>ວັນທີ</SortButton>,
     cell: ({ row }) => {
       return <FormattedDate date={row.getValue("receiptDate")} />;
     },
   },
   {
     accessorKey: "totalAmount",
-    header: "ມູນຄ່າ",
+    header: ({ column }) => <SortButton column={column}>ມູນຄ່າ</SortButton>,
     cell: ({ row }) => {
+      const amount = row.getValue("totalAmount");
       return (
-        <FormattedCurrency amount={parseFloat(row.getValue("totalAmount"))} />
+        <FormattedCurrency
+          amount={
+            typeof amount === "string" ? parseFloat(amount) : Number(amount)
+          }
+        />
       );
     },
   },
   {
-    accessorKey: "orcConfidence",
-    header: "ຄວາມຖືກຕ້ອງ",
+    accessorKey: "ocrConfidence",
+    header: ({ column }) => <SortButton column={column}>ຄວາມຖືກຕ້ອງ</SortButton>,
     cell: ({ row }) => {
-      const confidence = parseFloat(row.getValue("orcConfidence"));
-      const percentage = Math.round(confidence * 100);
+      const confidence = row.getValue("ocrConfidence");
+      if (confidence === null || confidence === undefined) return "-";
+      const percentage = Math.round(Number(confidence) * 100);
       return <span>{percentage}%</span>;
     },
   },
   {
     accessorKey: "status",
-    header: "ສະຖານະ",
+    header: ({ column }) => <SortButton column={column}>ສະຖານະ</SortButton>,
     cell: ({ row }) => {
-      const status = row.getValue("status") as any;
+      const status = row.getValue("status") as ReceiptStatus;
       return <ReceiptStatusBadge status={status} />;
     },
   },
@@ -100,6 +142,39 @@ export const columns: ColumnDef<Receipt>[] = [
   },
 ];
 
-export default function ReceiptTable() {
-  return <DataTable columns={columns} data={Receipt_Mock_Data} />;
+export default function ReceiptTable({
+  data,
+  metadata,
+}: {
+  data: Receipt[];
+  metadata?: any;
+}) {
+  const { sortBy, sortOrder, page, limit, setSorting, setPage } =
+    useFilterStore();
+
+  return (
+    <DataTable
+      columns={columns}
+      data={data}
+      sorting={sortBy ? [{ id: sortBy, desc: sortOrder === "desc" }] : []}
+      onSortingChange={(updater) => {
+        const next = typeof updater === "function" ? updater([]) : updater;
+        if (next.length > 0) {
+          setSorting(next[0].id, next[0].desc ? "desc" : "asc");
+        }
+      }}
+      pagination={{
+        pageIndex: page - 1,
+        pageSize: limit,
+      }}
+      onPaginationChange={(updater) => {
+        const next =
+          typeof updater === "function"
+            ? updater({ pageIndex: page - 1, pageSize: limit })
+            : updater;
+        setPage(next.pageIndex + 1);
+      }}
+      rowCount={metadata?.total || 0}
+    />
+  );
 }

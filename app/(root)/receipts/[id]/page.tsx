@@ -10,7 +10,7 @@ import Image from "next/image";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { Field, FieldLabel } from "@/components/ui/field";
-import ReceiptOCRAccuracy from "@/components/receipt/receipt-orc-accuracy";
+import ReceiptOCRAccuracy from "@/components/receipt/receipt-ocr-accuracy";
 import SigmaImage from "@/public/sigma.png";
 import { Button } from "@/components/ui/button";
 import { Pen, Trash } from "lucide-react";
@@ -94,7 +94,7 @@ export default async function ReceiptPage({
               )}
             </div>
             <div className="p-4 border border-solid border-black">
-              <ReceiptOCRAccuracy orcConfidence={receipt?.orcConfidence} />
+              <ReceiptOCRAccuracy ocrConfidence={receipt?.ocrConfidence} />
             </div>
           </div>
 

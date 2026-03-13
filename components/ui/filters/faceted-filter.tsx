@@ -20,11 +20,14 @@ import { PlusCircle } from "lucide-react";
 
 interface FacetedFilterProps<T extends string> {
   title: string;
-  options: T[];
+  options: {
+    label: string;
+    value: T;
+    icon?: React.ComponentType<{ className?: string }>;
+  }[];
   selected: T[];
   setSelected: (value: T[]) => void;
   renderIcon?: (option: T) => React.ReactNode;
-  facets: Record<string, number>;
 }
 
 export function FacetedFilter<T extends string>({
@@ -33,7 +36,6 @@ export function FacetedFilter<T extends string>({
   selected,
   setSelected,
   renderIcon,
-  facets,
 }: FacetedFilterProps<T>) {
   function toggle(value: T) {
     const next = selected.includes(value)
@@ -59,15 +61,17 @@ export function FacetedFilter<T extends string>({
                   {selected.length} selected
                 </Badge>
               ) : (
-                selected.map((s) => (
-                  <Badge
-                    key={s}
-                    variant="secondary"
-                    className="rounded-sm px-1 font-normal"
-                  >
-                    {s}
-                  </Badge>
-                ))
+                options
+                  .filter((opt) => selected.includes(opt.value))
+                  .map((opt) => (
+                    <Badge
+                      key={opt.value}
+                      variant="secondary"
+                      className="rounded-sm px-1 font-normal"
+                    >
+                      {opt.label}
+                    </Badge>
+                  ))
               )}
             </>
           )}
@@ -81,15 +85,18 @@ export function FacetedFilter<T extends string>({
             <CommandEmpty>No results found.</CommandEmpty>
             <CommandGroup>
               {options.map((option) => {
-                const isSelected = selected.includes(option);
+                const isSelected = selected.includes(option.value);
                 return (
-                  <CommandItem key={option} onSelect={() => toggle(option)}>
+                  <CommandItem
+                    key={option.value}
+                    onSelect={() => toggle(option.value)}
+                  >
                     <Checkbox checked={isSelected} className="mr-2" />
-                    {renderIcon?.(option)}
-                    <span>{option}</span>
-                    <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs text-muted-foreground">
-                      {facets[option] ?? 0}
-                    </span>
+                    {option.icon && (
+                      <option.icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                    )}
+                    {renderIcon?.(option.value)}
+                    <span>{option.label}</span>
                   </CommandItem>
                 );
               })}

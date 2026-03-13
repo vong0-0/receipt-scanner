@@ -4,11 +4,11 @@ import { getOCRAccuracy } from "@/lib/ocr-utils";
 import { Field, FieldLabel } from "@/components/ui/field";
 
 export default function ReceiptOCRAccuracy({
-  orcConfidence,
+  ocrConfidence,
 }: {
-  orcConfidence: number;
+  ocrConfidence: number;
 }) {
-  const ocrAccuracy = getOCRAccuracy(orcConfidence);
+  const ocrAccuracy = getOCRAccuracy(ocrConfidence);
   return (
     <>
       <Field className="w-full gap-2">

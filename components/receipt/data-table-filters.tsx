@@ -4,23 +4,10 @@ import { useFilterStore, useFilterUrlSync } from "@/hooks/use-filter-store";
 import { FacetedFilter } from "../ui/filters/faceted-filter";
 import { Input } from "../ui/input";
 import ResetFilterButton from "../ui/filters/reset-filter-button";
-import { Button } from "../ui/button";
-import { Plus } from "lucide-react";
 import { RECEIPT_STATUSES, ReceiptStatus } from "@/types/receipt.type";
+import { DatePickerFilter } from "../ui/filters/date-picker-filter";
 
-type Priority = "Low" | "Medium" | "High";
-type Status = "Backlog" | "Todo" | "In Progress" | "Done" | "Cancelled";
-
-const STATUSES: Status[] = [
-  "Backlog",
-  "Todo",
-  "In Progress",
-  "Done",
-  "Cancelled",
-];
-const PRIORITIES: Priority[] = ["Low", "Medium", "High"];
-
-export default function DataTableFilters({}) {
+export default function DataTableFilters({ data = [] }: { data?: any[] }) {
   const {
     hasFilters,
     getFilter,
@@ -35,13 +22,11 @@ export default function DataTableFilters({}) {
   useFilterUrlSync();
 
   const selectedStatuses = getFilter<ReceiptStatus>("receiptStatus", []);
-  const selectedPriorities = getFilter<Priority>("priority", []);
 
-  const { receiptStatus: receiptStatusFacets, priority: priorityFacets } =
-    computeFacets([], {
-      receiptStatus: RECEIPT_STATUSES,
-      priority: PRIORITIES,
-    });
+  // Date filter management
+  const dateStr = getFilter<string>("date", [])[0];
+  const selectedDate = dateStr ? new Date(dateStr) : undefined;
+
   return (
     <div className="flex items-center gap-2 flex-wrap">
       <Input
@@ -51,18 +36,15 @@ export default function DataTableFilters({}) {
         onChange={(e) => setSearch(e.target.value)}
       />
       <FacetedFilter
-        title="Status"
+        title="ສະຖານະ"
         options={RECEIPT_STATUSES}
         selected={selectedStatuses}
         setSelected={(val) => setFilter("receiptStatus", val)}
-        facets={receiptStatusFacets}
       />
-      <FacetedFilter
-        title="Priority"
-        options={PRIORITIES}
-        selected={selectedPriorities}
-        setSelected={(val) => setFilter("priority", val)}
-        facets={priorityFacets}
+      <DatePickerFilter
+        date={selectedDate}
+        setDate={(date) => setFilter("date", date ? [date.toISOString()] : [])}
+        formatStr="yyyy/MM/dd"
       />
       {hasFilters && <ResetFilterButton resetFilters={resetFilters} />}
     </div>
