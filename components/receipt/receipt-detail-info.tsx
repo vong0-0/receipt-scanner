@@ -92,11 +92,6 @@ export const columns: ColumnDef<ReceiptItem>[] = [
   {
     accessorKey: "quantity",
     header: "ຈຳນວນ",
-    cell: ({ row }) => {
-      return (
-        <FormattedCurrency amount={parseFloat(row.getValue("quantity"))} />
-      );
-    },
   },
   {
     accessorKey: "unitPrice",

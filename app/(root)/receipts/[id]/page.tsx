@@ -1,32 +1,53 @@
+"use client";
+
 import AppHeader from "@/components/app-header";
 import ReceiptImagePlaceholder from "@/components/receipt/receipt-image-placeholder";
-import { ReceiptStatusBadge } from "@/components/receipt/receipt-status-badge";
-import { FormattedDate } from "@/components/ui/formatted-date";
 import { formatDateTime } from "@/lib/format";
-import { getOCRAccuracy } from "@/lib/ocr-utils";
-import { Receipt_Mock_Data } from "@/mock";
-import { Receipt } from "@/types/receipt.type";
-import Image from "next/image";
-import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
-import { Field, FieldLabel } from "@/components/ui/field";
 import ReceiptOCRAccuracy from "@/components/receipt/receipt-ocr-accuracy";
-import SigmaImage from "@/public/sigma.png";
 import { Button } from "@/components/ui/button";
-import { Pen, Trash } from "lucide-react";
+import { Loader2, Pen, Trash } from "lucide-react";
 import {
   ReceiptDetailItems,
   ReceiptDetailSummary,
 } from "@/components/receipt/receipt-detail-info";
+import { useReceipt } from "@/hooks/use-receipt";
+import { useParams } from "next/navigation";
+import Image from "next/image";
 
-export default async function ReceiptPage({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
+export default function ReceiptPage() {
+  const { id } = useParams<{ id: string }>();
+  const { data: receipt, isLoading, error } = useReceipt(id);
 
-  const receipt: Receipt = Receipt_Mock_Data.find((r) => r.id === id)!;
+  if (isLoading) {
+    return (
+      <>
+        <AppHeader title="ໃບບິນ" />
+        <div className="flex flex-1 items-center justify-center">
+          <div className="flex flex-col items-center gap-2">
+            <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+            <p className="text-sm text-muted-foreground font-medium">
+              ກຳລັງໂຫລດຂໍ້ມູນ...
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  if (error || !receipt) {
+    return (
+      <>
+        <AppHeader title="ໃບບິນ" />
+        <div className="flex flex-1 items-center justify-center">
+          <div className="flex flex-col items-center gap-2">
+            <p className="text-sm text-muted-foreground font-medium">
+              ບໍ່ພົບໃບບິນທີ່ຕ້ອງການ
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   return (
     <>
@@ -81,13 +102,14 @@ export default async function ReceiptPage({
           <div className="flex flex-col flex-1 lg:max-w-[500px]">
             {/* Receipt image and OCR accuracy */}
             <div className="h-[450px]">
-              {!receipt?.imageUrl ? (
+              {receipt?.imageUrl ? (
                 <Image
                   className="w-full h-full object-cover"
-                  src={receipt?.imageUrl || SigmaImage}
-                  alt={receipt?.storeName}
+                  src={receipt.imageUrl}
+                  alt={receipt?.storeName || "Receipt"}
                   width={1000}
                   height={1000}
+                  unoptimized
                 />
               ) : (
                 <ReceiptImagePlaceholder />

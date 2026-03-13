@@ -65,7 +65,7 @@ export function DataTable<TData, TValue>({
     rowCount: rowCount,
     state: {
       sorting: manualSorting ?? internalSorting,
-      pagination: manualPagination,
+      ...(manualPagination && { pagination: manualPagination }),
     },
     initialState: {
       pagination: {
