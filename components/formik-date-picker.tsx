@@ -13,6 +13,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
+import { lo } from "@/lib/locales/lo";
+
 interface FormikDatePickerProps {
   label: string;
   dateFormat?: string;
@@ -45,9 +47,7 @@ export default function FormikDatePicker({
     helpers.setValue(newDate);
   };
 
-  const timeValue = field.value
-    ? `${String(new Date(field.value).getHours()).padStart(2, "0")}:${String(new Date(field.value).getMinutes()).padStart(2, "0")}`
-    : "";
+  const timeValue = field.value ? format(new Date(field.value), "HH:mm") : "";
 
   return (
     <div className="flex flex-col gap-1">
@@ -65,7 +65,7 @@ export default function FormikDatePicker({
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {field.value ? (
-              format(field.value, resolvedFormat)
+              format(field.value, resolvedFormat, { locale: lo })
             ) : (
               <span>{placeholder}</span>
             )}
@@ -75,6 +75,7 @@ export default function FormikDatePicker({
           <Calendar
             mode="single"
             selected={field.value}
+            locale={lo}
             onSelect={(date) => {
               if (!date) return;
               // ✅ ถ้ามี time อยู่แล้วให้คงเวลาเดิมไว้
@@ -87,17 +88,59 @@ export default function FormikDatePicker({
               if (!showTimePicker) setOpen(false); // ✅ ถ้าไม่มี time ให้ปิดทันที
             }}
           />
-          {/* ✅ แสดง time input เฉพาะตอน showTimePicker = true */}
+          {/* ✅ แถบเลือกเวลาแบบ 24 ชั่วโมง */}
           {showTimePicker && (
-            <div className="border-t p-3 flex items-center gap-2">
-              <Label className="text-sm">ເວລາ</Label>
-              <Input
-                type="time"
-                value={timeValue}
-                onChange={handleTimeChange}
-                className="w-fit"
-              />
-              <Button size="sm" onClick={() => setOpen(false)}>
+            <div className="border-t p-3 flex items-center justify-between gap-1 bg-muted/5">
+              <div className="flex items-center gap-2">
+                <Label className="text-sm font-semibold">ເວລາ:</Label>
+                <div className="w-full flex items-center gap-1 bg-white border rounded-lg px-2 py-1 shadow-sm">
+                  {/* Hour Selector */}
+                  <select
+                    className="w-full bg-transparent border-none focus:ring-0 text-sm outline-none cursor-pointer p-0 text-center"
+                    value={field.value ? new Date(field.value).getHours() : 0}
+                    onChange={(e) => {
+                      const newDate = field.value
+                        ? new Date(field.value)
+                        : new Date();
+                      newDate.setHours(parseInt(e.target.value));
+                      helpers.setValue(newDate);
+                    }}
+                  >
+                    {Array.from({ length: 24 }).map((_, i) => (
+                      <option key={i} value={i}>
+                        {String(i).padStart(2, "0")}
+                      </option>
+                    ))}
+                  </select>
+
+                  <span className="text-muted-foreground font-bold">:</span>
+
+                  {/* Minute Selector */}
+                  <select
+                    className="w-full bg-transparent border-none focus:ring-0 text-sm outline-none cursor-pointer p-0 text-center"
+                    value={field.value ? new Date(field.value).getMinutes() : 0}
+                    onChange={(e) => {
+                      const newDate = field.value
+                        ? new Date(field.value)
+                        : new Date();
+                      newDate.setMinutes(parseInt(e.target.value));
+                      helpers.setValue(newDate);
+                    }}
+                  >
+                    {Array.from({ length: 60 }).map((_, i) => (
+                      <option key={i} value={i}>
+                        {String(i).padStart(2, "0")}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <Button
+                size="sm"
+                className="bg-primary hover:bg-primary/90 text-white font-bold h-8 px-4"
+                onClick={() => setOpen(false)}
+              >
                 ຕົກລົງ
               </Button>
             </div>

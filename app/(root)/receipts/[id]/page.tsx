@@ -11,6 +11,8 @@ import {
   ReceiptDetailSummary,
 } from "@/components/receipt/receipt-detail-info";
 import { useReceipt } from "@/hooks/use-receipt";
+import { useRef } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useDeleteReceipt } from "@/hooks/use-delete-receipt";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
@@ -67,7 +69,7 @@ export default function ReceiptPage() {
 
           {/* Action buttons */}
           <div className="flex gap-2 items-center">
-            <div>
+            <Link href={`/receipts/${id}/edit`}>
               <Button
                 variant="outline"
                 className="hidden xs:flex bg-sky-600 text-white"
@@ -82,7 +84,7 @@ export default function ReceiptPage() {
               >
                 <Pen className="size-3.5" />
               </Button>
-            </div>
+            </Link>
             <ConfirmDialog
               title="ລົບໃບບິນ"
               description="ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້. ຂໍ້ມູນໃບບິນນີ້ຈະຖືກລຶບອອກຈາກລະບົບຢ່າງຖາວອນ."

@@ -145,9 +145,14 @@ export const columns: ColumnDef<Receipt>[] = [
                   <span>ເບິ່ງລາຍລະອຽດ</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-                <Pencil className="size-4 text-muted-foreground" />
-                <span>ແກ້ໄຂລາຍລະອຽດ</span>
+              <DropdownMenuItem
+                className="flex items-center gap-2 cursor-pointer"
+                asChild
+              >
+                <Link href={`/receipts/${row.original.id}/edit`}>
+                  <Pencil className="size-4 text-muted-foreground" />
+                  <span>ແກ້ໄຂລາຍລະອຽດ</span>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem

@@ -15,6 +15,7 @@ import { ReceiptItem } from "@/types/receipt.type";
 import { Button } from "./ui/button";
 import Image from "next/image";
 import SigmaImage from "@/public/sigma.png";
+import { useRouter } from "next/navigation";
 
 type ReceiptFormValues = CreateReceiptFormValues | EditReceiptFormValues;
 
@@ -80,6 +81,7 @@ export default function ReceiptForm({
   isSubmitting = false,
 }: ReceiptFormProps) {
   const { reset } = useUploadStore();
+  const router = useRouter();
   const submitStatusRef = useRef<"PENDING_REVIEW" | "REVIEWED">("REVIEWED");
 
   const schema = isEdit ? editReceiptSchema : createReceiptSchema;
@@ -95,9 +97,9 @@ export default function ReceiptForm({
       {({ values, errors }) => (
         <Form className="w-full max-w-[1300px] mx-auto">
           <div className="relation flex flex-col @3xl/main:flex-row gap-6 pb-6">
-            <div className="@3xl/main:sticky top-[2%] left-0 flex flex-col flex-1 w-full max-h-[500px] max-w-[400px] mx-auto">
+            <div className="@3xl/main:sticky top-[2%] left-0 flex flex-col flex-1 w-full h-fit max-h-[600px] max-w-[400px] mx-auto border rounded-xl overflow-hidden bg-muted/30">
               <Image
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
                 src={imageUrl || SigmaImage}
                 alt={"receipt image"}
                 width={1000}
@@ -154,7 +156,12 @@ export default function ReceiptForm({
               type="button"
               variant="outline"
               className="py-6 px-10 rounded-xl bg-red-600 text-white font-bold hover:bg-red-500 hover:text-white transition-all duration-300"
-              onClick={reset}
+              onClick={() => {
+                reset();
+                if (isEdit) {
+                  router.back();
+                }
+              }}
               disabled={isSubmitting}
             >
               ຍົກເລິກ
@@ -179,7 +186,7 @@ export default function ReceiptForm({
               disabled={isSubmitting}
             >
               {isSubmitting && submitStatusRef.current === "REVIEWED"
-                ? "ກຳລັງບັນທຶກ..."
+                ? "ກຳລັງບັນທຶก..."
                 : "ບັນທຶກຂໍ້ມູນໃບບິນຜ່ານການກວດສອບແລ້ວ"}
             </Button>
           </div>
@@ -221,12 +228,12 @@ export function ReceiptItemsForm({
               name={`receiptItems[${index}].price`}
               type="number"
               label="ລາຄາຕໍ່ຫນຶ່ງລາຍການ"
-              placeholder="ປ້ອນຈຳນວນລາຄາຕໍ່ລາຍການ"
+              placeholder="ປ້ອນຈຳນວນລາຄາຕໍ່ລາຍการ"
             />
             <FormikInput
               name={`receiptItems[${index}].amount`}
               type="number"
-              label="ລາຄາລວມຂອງລາຍການ"
+              label="ລາຄาລວມຂອງລາຍການ"
               placeholder="ປ້ອນລາຄາລວມຂອງລາຍການ"
             />
             <Button
