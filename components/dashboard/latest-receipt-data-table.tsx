@@ -1,23 +1,13 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { Eye, MoreHorizontal, Pencil, Trash } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { DataTable } from "../ui/data-table";
 import { Receipt } from "@/types/receipt.type";
-import { Receipt_Mock_Data } from "@/mock";
 import { FormattedDate } from "../ui/formatted-date";
 import { FormattedCurrency } from "../ui/formatted-currency";
 import { ReceiptStatusBadge } from "../receipt/receipt-status-badge";
+import { useReceipts } from "@/hooks/use-receipts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const columns: ColumnDef<Receipt>[] = [
   {
@@ -27,6 +17,7 @@ export const columns: ColumnDef<Receipt>[] = [
   {
     accessorKey: "category.name",
     header: "ຫມວດຫມູ່",
+    cell: ({ row }) => row.original.category?.name || "-",
   },
   {
     accessorKey: "receiptDate",
@@ -39,17 +30,21 @@ export const columns: ColumnDef<Receipt>[] = [
     accessorKey: "totalAmount",
     header: "ມູນຄ່າ",
     cell: ({ row }) => {
+      const amount = row.getValue("totalAmount");
       return (
-        <FormattedCurrency amount={parseFloat(row.getValue("totalAmount"))} />
+        <FormattedCurrency 
+          amount={typeof amount === "string" ? parseFloat(amount) : Number(amount)} 
+        />
       );
     },
   },
   {
     accessorKey: "ocrConfidence",
-    header: "ຄວາມຖືກຕ້ອງ",
+    header: "ความถูกต้ออง",
     cell: ({ row }) => {
-      const confidence = parseFloat(row.getValue("ocrConfidence"));
-      const percentage = Math.round(confidence * 100);
+      const confidence = row.getValue("ocrConfidence");
+      if (confidence === null || confidence === undefined) return "-";
+      const percentage = Math.round(Number(confidence) * 100);
       return <span>{percentage}%</span>;
     },
   },
@@ -61,39 +56,31 @@ export const columns: ColumnDef<Receipt>[] = [
       return <ReceiptStatusBadge status={status} />;
     },
   },
-  {
-    id: "actions",
-    size: 40,
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center">
-            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-              <Eye className="size-4 text-muted-foreground" />
-              <span>ເບິ່ງລາຍລະອຽດ</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-              <Pencil className="size-4 text-muted-foreground" />
-              <span>ແກ້ໄຂລายລະອຽດ</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive">
-              <Trash className="size-4" />
-              <span>ລົບໃບບິນ</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
 ];
 
 export default function LatestReceiptDataTable() {
-  return <DataTable columns={columns} data={Receipt_Mock_Data} pageSize={10} />;
+  const { data, isLoading } = useReceipts({
+    limit: 10,
+    sortBy: "receiptDate",
+    sortOrder: "desc",
+  });
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4 pt-4">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-12 w-full" />
+        ))}
+      </div>
+    );
+  }
+
+  return (
+    <DataTable
+      columns={columns}
+      data={data?.data || []}
+      pageSize={10}
+      showPagination={false}
+    />
+  );
 }
