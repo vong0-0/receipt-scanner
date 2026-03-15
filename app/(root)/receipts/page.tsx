@@ -9,6 +9,7 @@ import { useReceipts } from "@/hooks/use-receipts";
 import { ReceiptStatus } from "@/types/receipt.type";
 import { Loader2, Plus } from "lucide-react";
 import Link from "next/link";
+import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
 
 export default function Page() {
   const { search, sortBy, sortOrder, page, limit, getFilter } =
@@ -32,7 +33,11 @@ export default function Page() {
     <>
       <AppHeader title="ໃບບິນ" />
       <div className="@container/main flex flex-1 flex-col gap-6">
-        <div className="flex items-center justify-between px-4 lg:px-6 pt-6 pb-4 md:pb-3 flex-wrap gap-4">
+        <div className="px-4 lg:px-6 pt-6 space-y-2">
+          <AppBreadcrumbs items={[{ label: "ປະຫວັດໃບບິນ", href: "/" }]} />
+          <h1 className="text-4xl font-bold">ປະຫວັດໃບບິນ</h1>
+        </div>
+        <div className="flex items-center justify-between px-4 lg:px-6 pb-4 md:pb-3 flex-wrap gap-4">
           <DataTableFilters data={receipts} />
           <Button
             variant="default"

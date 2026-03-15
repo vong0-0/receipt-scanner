@@ -17,6 +17,7 @@ import { useParams } from "next/navigation";
 import { useDeleteReceipt } from "@/hooks/use-delete-receipt";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import Image from "next/image";
+import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
 
 export default function ReceiptPage() {
   const { id } = useParams<{ id: string }>();
@@ -58,57 +59,64 @@ export default function ReceiptPage() {
     <>
       <AppHeader title={`ໃບບິນ ${id}`} />
       <div className="@container/main flex flex-1 flex-col gap-6 px-4 lg:px-6">
-        <div className="flex items-center justify-between gap-4 pt-6 pb-4 md:pb-3">
-          {/* Store name and date */}
-          <div className="flex flex-col gap-1  ">
-            <h1 className="text-2xl font-bold">{receipt?.storeName}</h1>
-            <p className="text-sm text-muted-foreground">
-              {formatDateTime(receipt?.receiptDate)}
-            </p>
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex gap-2 items-center">
-            <Link href={`/receipts/${id}/edit`}>
-              <Button
-                variant="outline"
-                className="hidden xs:flex bg-sky-600 text-white"
-              >
-                ແກ້ໄຂ
-              </Button>
-              <Button
-                variant="outline"
-                className="xs:hidden bg-sky-600 text-white"
-                size="icon"
-                aria-label="Submit"
-              >
-                <Pen className="size-3.5" />
-              </Button>
-            </Link>
-            <ConfirmDialog
-              title="ລົບໃບບິນ"
-              description="ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້. ຂໍ້ມູນໃບບິນນີ້ຈະຖືກລຶບອອກຈາກລະບົບຢ່າງຖາວອນ."
-              confirmText="ລົບ"
-              confirmVariant="destructive"
-              onConfirm={() => deleteReceipt.mutateAsync(id)}
-            >
-              <div>
+        <div className="pt-6 space-y-2 w-full">
+          <AppBreadcrumbs
+            items={[
+              { label: "ປະຫວັດໃບບິນ", href: "/receipts" },
+              { label: "ລາຍລະອຽດໃບບິນ" },
+            ]}
+          />
+          <div className="flex items-center justify-between gap-4 pb-4 md:pb-3">
+            {/* Store name and date */}
+            <div className="flex flex-col gap-1  ">
+              <h1 className="text-2xl font-bold">{receipt?.storeName}</h1>
+              <p className="text-sm text-muted-foreground">
+                {formatDateTime(receipt?.receiptDate)}
+              </p>
+            </div>
+            {/* Action buttons */}
+            <div className="flex gap-2 items-center">
+              <Link href={`/receipts/${id}/edit`}>
                 <Button
                   variant="outline"
-                  className="hidden xs:flex bg-rose-600 text-white"
+                  className="hidden xs:flex bg-sky-600 text-white"
                 >
-                  ລົບ
+                  ແກ້ໄຂ
                 </Button>
                 <Button
                   variant="outline"
-                  className="xs:hidden bg-rose-600 text-white"
+                  className="xs:hidden bg-sky-600 text-white"
                   size="icon"
-                  aria-label="Delete"
+                  aria-label="Submit"
                 >
-                  <Trash className="size-3.5" />
+                  <Pen className="size-3.5" />
                 </Button>
-              </div>
-            </ConfirmDialog>
+              </Link>
+              <ConfirmDialog
+                title="ລົບໃບບິນ"
+                description="ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້. ຂໍ້ມູນໃບບິນນີ້ຈະຖືກລຶບອອກຈາກລະບົບຢ່າງຖາວອນ."
+                confirmText="ລົບ"
+                confirmVariant="destructive"
+                onConfirm={() => deleteReceipt.mutateAsync(id)}
+              >
+                <div>
+                  <Button
+                    variant="outline"
+                    className="hidden xs:flex bg-rose-600 text-white"
+                  >
+                    ລົບ
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="xs:hidden bg-rose-600 text-white"
+                    size="icon"
+                    aria-label="Delete"
+                  >
+                    <Trash className="size-3.5" />
+                  </Button>
+                </div>
+              </ConfirmDialog>
+            </div>
           </div>
         </div>
         <div className="flex flex-col @3xl/main:flex-row gap-6 pb-6">

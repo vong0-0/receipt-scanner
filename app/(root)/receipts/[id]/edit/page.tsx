@@ -6,6 +6,7 @@ import ReceiptForm from "@/components/receipt-form";
 import { useUpdateReceipt } from "@/hooks/use-update-receipt";
 import { Loader2 } from "lucide-react";
 import AppHeader from "@/components/app-header";
+import { AppBreadcrumbs } from "@/components/app-breadcrumbs";
 
 export default function EditReceiptPage() {
   const { id } = useParams() as { id: string };
@@ -54,6 +55,16 @@ export default function EditReceiptPage() {
   return (
     <>
       <AppHeader title="ແກ້ໄຂຂໍ້ມູນໃບບິນ" />
+      <div className="px-4 lg:px-6 pt-6 space-y-2">
+        <AppBreadcrumbs
+          items={[
+            { label: "ປະຫວັດໃບບິນ", href: "/receipts" },
+            { label: "ລາຍລະອຽດໃບບິນ", href: `/receipts/${id}` },
+            { label: "ແກ້ໄຂຂໍ້ມູນໃບບິນ" },
+          ]}
+        />
+        <h1 className="text-4xl font-bold">ແກ້ໄຂຂໍ້ມູນໃບບິນ</h1>
+      </div>
       <div className="@container/main p-4 lg:p-6">
         <ReceiptForm
           isEdit

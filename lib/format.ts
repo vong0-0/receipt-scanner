@@ -1,19 +1,19 @@
+import { format } from "date-fns";
+import { lo } from "@/lib/locales/lo";
+
 /**
- * Formats a date string or Date object into YYYY/MM/DD HH:mm format by default.
+ * Formats a date string or Date object into localized format.
  */
-export function formatDateTime(date: Date | string | undefined | null) {
+export function formatDateTime(
+  date: Date | string | undefined | null,
+  formatStr: string = "MMM d, yyyy HH:mm",
+) {
   if (!date) return "";
 
   const d = new Date(date);
   if (isNaN(d.getTime())) return "";
 
-  const year = d.getFullYear();
-  const month = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  const hours = String(d.getHours()).padStart(2, "0");
-  const minutes = String(d.getMinutes()).padStart(2, "0");
-
-  return `${year}/${month}/${day} ${hours}:${minutes}`;
+  return format(d, formatStr, { locale: lo });
 }
 
 /**

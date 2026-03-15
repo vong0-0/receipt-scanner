@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/popover";
 import { format } from "date-fns";
 import { CalendarDays } from "lucide-react";
+import { lo } from "@/lib/locales/lo";
 
 interface DatePickerFilterProps {
   date: Date | undefined;
@@ -25,7 +26,11 @@ export function DatePickerFilter({
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border-dashed">
           <CalendarDays className="mr-2 h-4 w-4" />
-          {date ? format(date, formatStr) : <span>ເລືອກວັນທີ</span>}
+          {date ? (
+            format(date, formatStr, { locale: lo })
+          ) : (
+            <span>ເລືອກວັນທີ</span>
+          )}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
@@ -33,6 +38,7 @@ export function DatePickerFilter({
           mode="single"
           selected={date}
           onSelect={setDate}
+          locale={lo}
           initialFocus
         />
       </PopoverContent>

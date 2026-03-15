@@ -1,20 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { format } from "date-fns";
+import { lo } from "@/lib/locales/lo";
 
 interface FormattedDateProps {
   date: string | Date;
-  locale?: string;
-  options?: Intl.DateTimeFormatOptions;
+  formatStr?: string;
 }
 
 export function FormattedDate({
   date,
-  locale = "lo-LA",
-  options = {
-    dateStyle: "medium",
-    timeStyle: "short",
-  },
+  formatStr = "MMM d, yyyy HH:mm",
 }: FormattedDateProps) {
   const [mounted, setMounted] = useState(false);
 
@@ -31,6 +28,6 @@ export function FormattedDate({
   }
 
   return (
-    <span>{new Intl.DateTimeFormat(locale, options).format(dateObj)}</span>
+    <span>{format(dateObj, formatStr, { locale: lo })}</span>
   );
 }
