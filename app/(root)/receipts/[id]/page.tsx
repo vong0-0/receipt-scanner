@@ -12,11 +12,14 @@ import {
 } from "@/components/receipt/receipt-detail-info";
 import { useReceipt } from "@/hooks/use-receipt";
 import { useParams } from "next/navigation";
+import { useDeleteReceipt } from "@/hooks/use-delete-receipt";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import Image from "next/image";
 
 export default function ReceiptPage() {
   const { id } = useParams<{ id: string }>();
   const { data: receipt, isLoading, error } = useReceipt(id);
+  const deleteReceipt = useDeleteReceipt();
 
   if (isLoading) {
     return (
@@ -80,22 +83,30 @@ export default function ReceiptPage() {
                 <Pen className="size-3.5" />
               </Button>
             </div>
-            <div>
-              <Button
-                variant="outline"
-                className="hidden xs:flex bg-rose-600 text-white"
-              >
-                ລົບ
-              </Button>
-              <Button
-                variant="outline"
-                className="xs:hidden bg-rose-600 text-white"
-                size="icon"
-                aria-label="Submit"
-              >
-                <Trash className="size-3.5" />
-              </Button>
-            </div>
+            <ConfirmDialog
+              title="ລົບໃບບິນ"
+              description="ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້. ຂໍ້ມູນໃບບິນນີ້ຈະຖືກລຶບອອກຈາກລະບົບຢ່າງຖາວອນ."
+              confirmText="ລົບ"
+              confirmVariant="destructive"
+              onConfirm={() => deleteReceipt.mutateAsync(id)}
+            >
+              <div>
+                <Button
+                  variant="outline"
+                  className="hidden xs:flex bg-rose-600 text-white"
+                >
+                  ລົບ
+                </Button>
+                <Button
+                  variant="outline"
+                  className="xs:hidden bg-rose-600 text-white"
+                  size="icon"
+                  aria-label="Delete"
+                >
+                  <Trash className="size-3.5" />
+                </Button>
+              </div>
+            </ConfirmDialog>
           </div>
         </div>
         <div className="flex flex-col @3xl/main:flex-row gap-6 pb-6">

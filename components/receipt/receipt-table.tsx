@@ -14,9 +14,12 @@ import { DataTable } from "../ui/data-table";
 import { Receipt, ReceiptStatus } from "@/types/receipt.type";
 import { FormattedDate } from "../ui/formatted-date";
 import { FormattedCurrency } from "../ui/formatted-currency";
+import { useState } from "react";
 import { ReceiptStatusBadge } from "./receipt-status-badge";
 import Link from "next/link";
 import { useFilterStore } from "@/hooks/use-filter-store";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useDeleteReceipt } from "@/hooks/use-delete-receipt";
 import {
   ArrowUpDown,
   ArrowUp,
@@ -26,6 +29,7 @@ import {
   Pencil,
   Trash,
 } from "lucide-react";
+import { PaginatedResponse } from "@/types/api";
 
 interface SortButtonProps {
   column: any;
@@ -34,7 +38,7 @@ interface SortButtonProps {
 
 const SortButton = ({ column, children }: SortButtonProps) => {
   const isSorted = column.getIsSorted();
-  
+
   return (
     <Button
       variant="ghost"
@@ -88,7 +92,9 @@ export const columns: ColumnDef<Receipt>[] = [
   },
   {
     accessorKey: "ocrConfidence",
-    header: ({ column }) => <SortButton column={column}>ຄວາມຖືກຕ້ອງ</SortButton>,
+    header: ({ column }) => (
+      <SortButton column={column}>ຄວາມຖືກຕ້ອງ</SortButton>
+    ),
     cell: ({ row }) => {
       const confidence = row.getValue("ocrConfidence");
       if (confidence === null || confidence === undefined) return "-";
@@ -108,35 +114,53 @@ export const columns: ColumnDef<Receipt>[] = [
     id: "actions",
     size: 40,
     cell: ({ row }) => {
+      const deleteReceipt = useDeleteReceipt();
+      const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="center">
-            <DropdownMenuItem
-              className="flex items-center gap-2 cursor-pointer"
-              asChild
-            >
-              <Link href={`/receipts/${row.original.id}`}>
-                <Eye className="size-4 text-muted-foreground" />
-                <span>ເບິ່ງລາຍລະອຽດ</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
-              <Pencil className="size-4 text-muted-foreground" />
-              <span>ແກ້ໄຂລາຍລະອຽດ</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive">
-              <Trash className="size-4" />
-              <span>ລົບໃບບິນ</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <>
+          <ConfirmDialog
+            title="ລົບໃບບິນ"
+            description="ການກະທຳນີ້ບໍ່ສາມາດຍົກເລີກໄດ້. ທ່ານຕ້ອງການລົບໃບບິນນີ້ແທ້ບໍ່?"
+            confirmText="ລົບໃບບິນ"
+            confirmVariant="destructive"
+            onConfirm={() => deleteReceipt.mutateAsync(row.original.id)}
+            open={showDeleteDialog}
+            onOpenChange={setShowDeleteDialog}
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center">
+              <DropdownMenuItem
+                className="flex items-center gap-2 cursor-pointer"
+                asChild
+              >
+                <Link href={`/receipts/${row.original.id}`}>
+                  <Eye className="size-4 text-muted-foreground" />
+                  <span>ເບິ່ງລາຍລະອຽດ</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem className="flex items-center gap-2 cursor-pointer">
+                <Pencil className="size-4 text-muted-foreground" />
+                <span>ແກ້ໄຂລາຍລະອຽດ</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="flex items-center gap-2 cursor-pointer text-destructive focus:text-destructive w-full"
+                onSelect={() => setShowDeleteDialog(true)}
+                disabled={deleteReceipt.isPending}
+              >
+                <Trash className="size-4" />
+                <span>ລົບໃບບິນ</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </>
       );
     },
   },
@@ -147,7 +171,7 @@ export default function ReceiptTable({
   metadata,
 }: {
   data: Receipt[];
-  metadata?: any;
+  metadata?: PaginatedResponse<Receipt>["metadata"];
 }) {
   const { sortBy, sortOrder, page, limit, setSorting, setPage } =
     useFilterStore();
