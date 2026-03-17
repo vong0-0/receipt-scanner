@@ -5,17 +5,22 @@ import { FacetedFilter } from "../ui/filters/faceted-filter";
 import { Input } from "../ui/input";
 import ResetFilterButton from "../ui/filters/reset-filter-button";
 
-type Priority = "Low" | "Medium" | "High";
-type Status = "Backlog" | "Todo" | "In Progress" | "Done" | "Cancelled";
-
-const STATUSES: Status[] = [
-  "Backlog",
-  "Todo",
-  "In Progress",
-  "Done",
-  "Cancelled",
+const STATUSES: { label: string; value: string }[] = [
+  { label: "Backlog", value: "Backlog" },
+  { label: "Todo", value: "Todo" },
+  { label: "In Progress", value: "In Progress" },
+  { label: "Done", value: "Done" },
+  { label: "Cancelled", value: "Cancelled" },
 ];
-const PRIORITIES: Priority[] = ["Low", "Medium", "High"];
+
+const PRIORITIES: { label: string; value: string }[] = [
+  { label: "Low", value: "Low" },
+  { label: "Medium", value: "Medium" },
+  { label: "High", value: "High" },
+];
+
+type Status = "Backlog" | "Todo" | "In Progress" | "Done" | "Cancelled";
+type Priority = "Low" | "Medium" | "High";
 
 export default function DataTableFilters({}) {
   const {
@@ -52,14 +57,12 @@ export default function DataTableFilters({}) {
           options={STATUSES}
           selected={selectedStatuses}
           setSelected={(val) => setFilter("status", val)}
-          facets={statusFacets}
         />
         <FacetedFilter
           title="Priority"
           options={PRIORITIES}
           selected={selectedPriorities}
           setSelected={(val) => setFilter("priority", val)}
-          facets={priorityFacets}
         />
         {hasFilters && <ResetFilterButton resetFilters={resetFilters} />}
       </div>
