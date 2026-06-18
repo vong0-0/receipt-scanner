@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const response = await geminiClient.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-2.5-flash",
       contents: [
         {
           inlineData: {
@@ -127,6 +127,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ imageUrl, ocr }, { status: 200 });
   } catch (err) {
     // Gemini error → return error เท่านั้น ไม่บันทึก DB
+    console.error("Gemini OCR error:", err);
     return NextResponse.json({ error: "OCR failed" }, { status: 500 });
   }
 }
